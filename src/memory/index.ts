@@ -9,11 +9,20 @@ import {
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { parseArgs } from 'node:util';
 
+// Parse command line arguments
+const { values } = parseArgs({
+  options: {
+    'memory-file': {
+      type: 'string',
+    },
+  },
+});
 
-// Define the path to the JSONL file, you can change this to your desired local path
+// Define the path to the JSONL file, using command line argument or default
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const MEMORY_FILE_PATH = path.join(__dirname, 'memory.json');
+const MEMORY_FILE_PATH = values['memory-file'] || path.join(__dirname, 'memory.json');
 
 // We are storing our memory using entities, relations, and observations in a graph structure
 interface Entity {
@@ -178,8 +187,7 @@ class KnowledgeGraphManager {
   }
 }
 
-const knowledgeGraphManager = new KnowledgeGraphManager();
-
+const knowledgeGraphManager = new KnowledgeGraphManager;
 
 // The server instance and tools exposed to Claude
 const server = new Server({
